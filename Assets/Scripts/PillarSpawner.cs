@@ -15,12 +15,13 @@ public class PillarSpawner : MonoBehaviour
 
 	private List<Vector2> points;
 
+#if UNITY_EDITOR
 	void OnValidate()
 	{
 		points = PoissonDiscSampler.SamplePoissonDiscPositions(minRadius, maxRadius, regionSize, rejectionSamples);
 	}
 
-#if UNITY_EDITOR
+
 	void OnDrawGizmos()
 	{
 		Gizmos.DrawWireCube(new Vector3(regionOffset.x + regionSize.x / 2, regionOffset.y, regionOffset.z + regionSize.y / 2), new Vector3(regionSize.x, 0, regionSize.y));
@@ -49,6 +50,9 @@ public class PillarSpawner : MonoBehaviour
 
 	void Start()
 	{
+#if UNITY_STANDALONE
+		points = PoissonDiscSampler.SamplePoissonDiscPositions(minRadius, maxRadius, regionSize, rejectionSamples);
+#endif
 		float[] yRotations = new float[] { 0, 22.5f, 45, 67.5f };
 
 		if (points.Count > 0)

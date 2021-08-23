@@ -7,11 +7,13 @@ public class CamRotate : MonoBehaviour
 	[SerializeField] private float maxX, rotateSpeed, moveSpeed;
 
 	private Vector3 rotation;
+	private PlayerUI playerUI;
 
 	void Start()
 	{
 		Cursor.visible = false;
 		Cursor.lockState = CursorLockMode.Locked;
+		playerUI = FindObjectOfType<PlayerUI>();
 	}
 
 	// Update is called once per frame
@@ -19,6 +21,8 @@ public class CamRotate : MonoBehaviour
 	{
 		if (Input.GetKeyDown(KeyCode.Escape))
 			Application.Quit();
+		if (playerUI.EndingRound())
+			return;
 		Move();
 		Rotate();
 	}

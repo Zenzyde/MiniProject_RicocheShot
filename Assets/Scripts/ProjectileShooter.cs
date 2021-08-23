@@ -32,7 +32,7 @@ public class ProjectileShooter : MonoBehaviour
 		if (uI.EndedRound())
 			SceneManager.LoadScene(SceneManager.GetActiveScene().name);
 		VisualizeProjectile();
-		if (Input.GetMouseButtonDown(0))
+		if (Input.GetMouseButtonDown(0) && !uI.EndingRound())
 		{
 			ShootProjectile();
 		}
@@ -92,6 +92,11 @@ public class ProjectileShooter : MonoBehaviour
 		{
 			if (Physics.SphereCast(ray, sphereCastRadius, out RaycastHit hit, sphereCastDistance))
 			{
+				if (hit.transform.parent != null && hit.transform.parent.GetComponent<InitiateTargetPillar>() &&
+					!hit.transform.GetComponent<RandomizeTarget>())
+				{
+					break;
+				}
 				points++;
 				destroyMult++;
 				if (hit.transform.GetComponent<RandomizeTarget>())
@@ -99,7 +104,7 @@ public class ProjectileShooter : MonoBehaviour
 					hitTarget = true;
 					break;
 				}
-				else
+				else if (hit.transform.tag == "Destructible")
 				{
 					Destroy(hit.transform.gameObject);
 				}
@@ -139,6 +144,12 @@ public class ProjectileShooter : MonoBehaviour
 				if (hit.transform.GetComponent<RandomizeTarget>())
 				{
 					mpb.SetColor("_EmissionColor", Color.yellow * 2f);
+					line.SetPropertyBlock(mpb);
+					break;
+				}
+				else if (hit.transform.parent != null && hit.transform.parent.GetComponent<InitiateTargetPillar>())
+				{
+					mpb.SetColor("_EmissionColor", Color.cyan * 2f);
 					line.SetPropertyBlock(mpb);
 					break;
 				}
