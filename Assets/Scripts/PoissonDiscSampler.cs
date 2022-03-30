@@ -24,7 +24,7 @@ public static class PoissonDiscSampler
 		int[,] grid = new int[Mathf.CeilToInt(sampleRegionSize.x / cellSize), Mathf.CeilToInt(sampleRegionSize.y / cellSize)];
 
 		//The final list of positions to be returned
-		List<Vector2> points = new List<Vector2>();
+		//List<Vector2> points = new List<Vector2>();
 
 		//List of temporary, possible positions to be synced to "points" list later
 		List<Vector2> spawnPoints = new List<Vector2>();
@@ -52,15 +52,15 @@ public static class PoissonDiscSampler
 				//Calculate the possible/candidate position from the direction
 				Vector2 candidate = spawnCenter + direction * Random.Range(radius, radius * 2);
 				//Check that the candidate/possible position is acceptable
-				if (IsValid(candidate, sampleRegionSize, cellSize, radius, points, grid))
+				if (IsValid(candidate, sampleRegionSize, cellSize, radius, spawnPoints, grid))
 				{
 					//Add the accepted position to the final list
-					points.Add(candidate);
+					//points.Add(candidate);
 					//Add the accepted position to the temporary list
 					spawnPoints.Add(candidate);
 					//Mark the position in the grid with the length of the final list to distinguish claimed & non-claimed positions
 					//(int)Candidate/CellSize => probably converts the candidate position to the grid-format
-					grid[(int)(candidate.x / cellSize), (int)(candidate.y / cellSize)] = points.Count;
+					grid[(int)(candidate.x / cellSize), (int)(candidate.y / cellSize)] = spawnPoints.Count;
 					//Set that a candidate has been accepted & break out of the for-loop
 					candidateAccepted = true;
 					break;
@@ -73,7 +73,7 @@ public static class PoissonDiscSampler
 				spawnPoints.RemoveAt(spawnIndex);
 			}
 		}
-		return points;
+		return spawnPoints;
 	}
 
 	/// <summary>
