@@ -1,18 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-3043544276514484442
-MonoBehaviour:
-  m_ObjectHideFlags: 11
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  version: 4
 --- !u!21 &2100000
 Material:
   serializedVersion: 6
@@ -20,19 +7,23 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: TargetMat
-  m_Shader: {fileID: 4800000, guid: 933532a4fcc9baf4fa0491de14d08ed7, type: 3}
-  m_ShaderKeywords: _EMISSION _ENVIRONMENTREFLECTIONS_OFF _SPECULARHIGHLIGHTS_OFF
-  m_LightmapFlags: 2
+  m_Name: CloudsMaterial
+  m_Shader: {fileID: -6465566751694194690, guid: 8bc0d5002416b7141a05691ba6755676, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 2000
-  stringTagMap:
-    RenderType: Opaque
-  disabledShaderPasses: []
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses:
+  - SHADOWCASTER
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - Texture2D_63e2637cf13f4d6d87e99120bd30a2e5:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _BaseMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -73,6 +64,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_05605767404343908a7429b1ab0a77f3_Texture_1:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _SpecGlossMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -90,6 +85,15 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
+    - Vector1_0ebf74629c6b4013bdfa2fd0b73997f6: -0.025
+    - Vector1_15ee40f26f8142e6ae0a3cc68f1457c9: 1.31
+    - Vector1_19e3aafc4fb347a5b28433d1dc817a77: 0.86
+    - Vector1_3c0c6fe18fc7405cae056d4d9a1a9a46: 18.4
+    - Vector1_562da50d6dd44e24a4111842b54e9677: 1
+    - Vector1_590a239e39c840d483391cf9421e75f0: 0.2
+    - Vector1_72c619bfc3384fbe92f7b695e8f717e1: 0.54
+    - Vector1_954ed8010ed8454287b067fb530c3aed: 0.025
+    - Vector1_de927ecdedc249c7b231310853f9d601: 5
     - _AlphaClip: 0
     - _Blend: 0
     - _BumpScale: 1
@@ -99,8 +103,8 @@ Material:
     - _Cutoff: 0.5
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
-    - _DstBlend: 0
-    - _EnvironmentReflections: 0
+    - _DstBlend: 10
+    - _EnvironmentReflections: 1
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
@@ -109,16 +113,38 @@ Material:
     - _Parallax: 0.005
     - _QueueOffset: 0
     - _ReceiveShadows: 1
+    - _SampleGI: 0
     - _Smoothness: 0.5
     - _SmoothnessTextureChannel: 0
-    - _SpecularHighlights: 0
-    - _SrcBlend: 1
-    - _Surface: 0
+    - _SpecularHighlights: 1
+    - _SrcBlend: 5
+    - _Surface: 1
     - _WorkflowMode: 1
-    - _ZWrite: 1
+    - _ZWrite: 0
     m_Colors:
+    - Color_33960c5cff944e21a639adba0d23c5db: {r: 0, g: 0.67209816, b: 1, a: 1}
+    - Color_8f02d057bd7f4865a941bc479a4f5f7a: {r: 0.49056602, g: 0.49056602, b: 0.49056602, a: 1}
+    - Vector2_2b4fde77dd3b4829bc46603f1286a3a4: {r: 1, g: 1, b: 0, a: 0}
+    - Vector2_834403eac24645c98cec2cf9bc554a68: {r: 20, g: 100, b: 0, a: 0}
+    - Vector2_f964b2b4d12041c29c6ccff00e3d94fc: {r: 1.09, g: 0.21, b: 0, a: 0}
+    - Vector3_5f0a19ffe8e84c1aa503b44f09153e77: {r: 0, g: 0, b: 0, a: 0}
+    - Vector3_a037fbde36a44683a6d5166c3ade1d1e: {r: 0, g: 0, b: 0, a: 0}
+    - Vector3_ba9f0147377b4a9a841ceec20869dbb1: {r: 0, g: 5, b: 0, a: 0}
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _EmissionColor: {r: 0, g: 23.968628, b: 4.7686276, a: 1}
+    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
+--- !u!114 &8248102087230829005
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 4

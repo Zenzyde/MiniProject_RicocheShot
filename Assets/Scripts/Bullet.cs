@@ -11,6 +11,8 @@ public class Bullet : MonoBehaviour
 	[SerializeField][Tooltip("How long should exiting bullet-time take")] float BulletTimeExitDuration;
 	[SerializeField][Tooltip("How far ahead should raycast look for a pillar to activate bullet time entry")] float RaycastMaxDist;
 	[SerializeField][Tooltip("For comparing size with 'ProjectileVisualizer spherecast' to ensure movement and bullet-time behaves correctly")] float SpherecastRadius;
+	[SerializeField] float WaypointReachedThreshold = 1f;
+	[SerializeField] float BulletTimeExitLength;
 
 	// Cached rigidbody for movement
 	private Rigidbody Rigidbody;
@@ -23,8 +25,6 @@ public class Bullet : MonoBehaviour
 
 	// Flag to indicate whether bullet has notified gamemanager that it's done bouncing
 	private bool CalledCallback;
-	// Flag for indicating if a call for slowing time has been made
-	private bool SlowedTime = false;
 
 	// Cached callback to call when done 'bullet-bouncing'
 	private System.Action Callback;
@@ -32,37 +32,97 @@ public class Bullet : MonoBehaviour
 	// List of pillars that were hit during 'bullet-bouncing' for point calculation and pillar-sinking
 	public HashSet<Pillar> HitPillars { get; private set; } = new HashSet<Pillar>();
 
+	private Pillar LastLeanedPillar;
+
+	private CameraController camera;
+
+	private float BulletSimulationSpeed = 1;
+
+	private float RemainingBulletTimeDuration = 0;
+
 	void Awake()
 	{
-		// Cache rigidbody and notify gamemanager to perform initial slowing of time for camera intro sequence when shooting bullet
+		// Cache rigidbody for camera intro sequence when shooting bullet
 		Rigidbody = GetComponent<Rigidbody>();
-		GameManager.INSTANCE.SlowTime(BulletTimeEnterDuration, BulletTimeTransitionDuration, BulletTimeExitDuration);
+		camera = FindObjectOfType<CameraController>();
+	}
+
+	void Update()
+	{
+		// Don't execute any further logic if we're at the last waypoint
+		if (CurrentWaypoint >= Waypoints.Count)
+			return;
+
+		if (Physics.SphereCast(transform.position, SpherecastRadius, transform.forward, out RaycastHit hit, RaycastMaxDist))
+		{
+			BulletSimulationSpeed = 0.05f;
+			RemainingBulletTimeDuration = BulletTimeExitLength;
+			if (hit.transform.TryGetComponent(out Pillar pillar))
+			{
+				if (LastLeanedPillar == null || LastLeanedPillar != pillar)
+				{
+					pillar.Lean(hit.point);
+					LastLeanedPillar = pillar;
+					camera.ShakeCamera();
+				}
+				// If we hit a new pillar, add it to the list and register it to the points-text
+				if (!HitPillars.Contains(pillar))
+				{
+					HitPillars.Add(pillar);
+					GameManager.INSTANCE.AddPointsToBuffer(pillar.PillarType);
+				}
+			}
+		}
+
+		RemainingBulletTimeDuration -= Time.deltaTime;
+
+		if (RemainingBulletTimeDuration <= 0.0f)
+		{
+			RemainingBulletTimeDuration = 0;
+			BulletSimulationSpeed = 1;
+		}
+
+		if (Vector3.Distance(transform.position, Waypoints[CurrentWaypoint]) <= WaypointReachedThreshold)
+		{
+			BulletSimulationSpeed = 0.05f;
+			RemainingBulletTimeDuration = BulletTimeExitLength;
+
+			// Set the position of the rigidbody for accuracy, not noticeable fortunately
+			transform.position = Waypoints[CurrentWaypoint];
+
+			// Update the current waypoint bullet moves towards
+			CurrentWaypoint++;
+
+			// Don't execute any further logic if we're at the last waypoint
+			if (CurrentWaypoint >= Waypoints.Count)
+				return;
+
+			// Calculate and flatten the look direction to the next waypoint
+			Vector3 projectedDirection = Vector3.ProjectOnPlane((Waypoints[CurrentWaypoint] - Waypoints[CurrentWaypoint - 1]).normalized, Vector3.up);
+			transform.rotation = Quaternion.LookRotation(projectedDirection);
+		}
 	}
 
 	void FixedUpdate()
 	{
 		// There are no waypoints to move towards for whatever reason, don't move
 		if (Waypoints.Count <= 0)
+		{
+			transform.position += MoveSpeed * Time.fixedDeltaTime * transform.forward * BulletSimulationSpeed;
 			return;
+		}
 
 		if (CurrentWaypoint < Waypoints.Count)
 		{
 			// While we still have waypoints to move towards, move based on simulated time
-			Rigidbody.position += MoveSpeed * Time.fixedDeltaTime * transform.forward * GameManager.INSTANCE.SIMULATION_SPEED;
-
-			// If close to a pillar, call to slow down simulated time for bullet-time and set flag
-			if (Physics.Raycast(Rigidbody.position, transform.forward, RaycastMaxDist) && !SlowedTime)
-			{
-				GameManager.INSTANCE.SlowTime();
-				SlowedTime = true;
-			}
+			transform.position += MoveSpeed * Time.fixedDeltaTime * transform.forward * BulletSimulationSpeed;
 		}
 		else if (CurrentWaypoint >= Waypoints.Count && !CalledCallback)
 		{
 			// No more waypoints to follow, let gamemanager know bullet is done and ready to be destroyed -- call callback
-			GameManager.INSTANCE.RestoreTime();
 			Callback.Invoke();
 			CalledCallback = true;
+			GameManager.INSTANCE.ResetShotMultiplier();
 		}
 	}
 
@@ -96,34 +156,18 @@ public class Bullet : MonoBehaviour
 		Callback = callBack;
 	}
 
-	void OnCollisionEnter(Collision other)
+	public Vector2 GetScreenPosition()
 	{
-		if (other.transform.TryGetComponent(out Pillar pillar))
+		return Camera.main.WorldToScreenPoint(transform.position);
+	}
+
+	void OnBecameInvisible()
+	{
+		if (!CalledCallback)
 		{
-			// Set the position of the rigidbody for accuracy, not noticeable fortunately
-			Rigidbody.position = Waypoints[CurrentWaypoint];
-
-			// Update the current waypoint bullet moves towards
-			CurrentWaypoint++;
-
-			// If we hit a new pillar, add it to the list and register it to the points-text
-			if (!HitPillars.Contains(pillar))
-			{
-				HitPillars.Add(pillar);
-				GameManager.INSTANCE.AddPointsToBuffer(pillar.PillarType);
-			}
-
-			// Don't execute any further logic if we're at the last waypoint
-			if (CurrentWaypoint >= Waypoints.Count)
-				return;
-
-			// Calculate and flatten the look direction to the next waypoint
-			Vector3 projectedDirection = Vector3.ProjectOnPlane((Waypoints[CurrentWaypoint] - Waypoints[CurrentWaypoint - 1]).normalized, Vector3.up);
-			transform.rotation = Quaternion.LookRotation(projectedDirection);
-
-			// We hit a pillar and want to move to the next waypoint, release bullet-timea and call to restore simulated time
-			SlowedTime = false;
-			GameManager.INSTANCE.RestoreTime();
+			Callback.Invoke();
+			CalledCallback = true;
+			GameManager.INSTANCE.ResetShotMultiplier();
 		}
 	}
 }

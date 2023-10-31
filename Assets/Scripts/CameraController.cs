@@ -16,6 +16,10 @@ public class CameraController : MonoBehaviour
 	[SerializeField][Tooltip("Camera intro animation curve, x-axis")] AnimationCurve CameraIntroCurveX;
 	[SerializeField][Tooltip("Camera intro animation curve, y-axis")] AnimationCurve CameraIntroCurveY;
 	[SerializeField][Tooltip("Camera intro animation curve, z-axis")] AnimationCurve CameraIntroCurveZ;
+	[SerializeField] Transform CameraPivot;
+	[SerializeField] Transform Player;
+	[SerializeField] Transform PlayerPlatform;
+	[SerializeField] float CameraPivotSpeed;
 
 	// Flag which enables normal movement only after intro is done
 	private bool IntroDone = false;
@@ -40,6 +44,8 @@ public class CameraController : MonoBehaviour
 	// Current active bullet instance
 	private Bullet bullet;
 
+	private Quaternion defaultRotation;
+
 	// Update is called once per frame
 	void Awake()
 	{
@@ -52,8 +58,12 @@ public class CameraController : MonoBehaviour
 		// Exit if initial animation is not done yet
 		if (!IntroDone)
 			return;
+
+		transform.localRotation = Quaternion.RotateTowards(transform.localRotation, defaultRotation, 0.25f);
+
+		PivotCamera();
 		// Handle camera bullet-following movement
-		MoveCamera();
+		// MoveCamera();
 	}
 
 	IEnumerator AnimateCameraIntro()
@@ -82,6 +92,8 @@ public class CameraController : MonoBehaviour
 		GameManager.INSTANCE.SetShootingRestriction(false);
 		// Let regular camera movement let loose!
 		IntroDone = true;
+
+		defaultRotation = transform.localRotation;
 	}
 
 	void MoveCamera()
@@ -94,7 +106,7 @@ public class CameraController : MonoBehaviour
 
 			// Handle percentage calculation based on simulated time
 			if (CurrentFollowDuration < BulletFollowIntroDuration)
-				CurrentFollowDuration += Time.fixedDeltaTime * GameManager.INSTANCE.SIMULATION_SPEED;
+				CurrentFollowDuration += Time.fixedDeltaTime;
 			float perc = (CurrentFollowDuration / BulletFollowIntroDuration);
 			// Lerp actual follow speed based on percentage -> move slower the closer camera is to bullet
 			CurrentFollowSpeed = Mathf.Lerp(BulletFollowSpeedFAR, BulletFollowSpeedNEAR, perc);
@@ -107,12 +119,12 @@ public class CameraController : MonoBehaviour
 			LastBulletFollowPos = transform.position;
 			// Lerp camera to folow bullet based on simulated time and lerped speed
 			transform.position = Vector3.Lerp(
-				transform.position, bullet.transform.position + BulletFollowOffset, CurrentFollowSpeed * Time.fixedDeltaTime * GameManager.INSTANCE.SIMULATION_SPEED);
+				transform.position, bullet.transform.position + BulletFollowOffset, CurrentFollowSpeed * Time.fixedDeltaTime);
 
 			// Calculate look direction, cache it for exit lerp and constantly lerp camera rotation to look at bullet
 			Quaternion look = Quaternion.LookRotation((bullet.transform.position - transform.position).normalized);
 			LastBulletFollowRot = look;
-			transform.rotation = Quaternion.Slerp(transform.rotation, look, RotationSpeed * Time.fixedDeltaTime * GameManager.INSTANCE.SIMULATION_SPEED);
+			transform.rotation = Quaternion.Slerp(transform.rotation, look, RotationSpeed * Time.fixedDeltaTime);
 		}
 		// If bullet has been destroyed
 		else
@@ -122,7 +134,7 @@ public class CameraController : MonoBehaviour
 
 			// Handle percentage calculation based on simulated time
 			if (CurrentFollowExitDuration < BulletFollowExitDuration)
-				CurrentFollowExitDuration += Time.fixedDeltaTime * GameManager.INSTANCE.SIMULATION_SPEED;
+				CurrentFollowExitDuration += Time.fixedDeltaTime;
 			float perc = (CurrentFollowExitDuration / BulletFollowExitDuration);
 
 			// If we've not reset lastbulletfollowposition, meaning camera is not yet at topdown view position
@@ -142,5 +154,29 @@ public class CameraController : MonoBehaviour
 				}
 			}
 		}
+	}
+
+	void PivotCamera()
+	{
+		if (transform.parent == null)
+		{
+			transform.SetParent(CameraPivot);
+			Player.SetParent(CameraPivot);
+			PlayerPlatform.SetParent(CameraPivot);
+		}
+
+		if (Input.GetKey(KeyCode.A))
+		{
+			CameraPivot.transform.RotateAround(CameraPivot.transform.position, Vector3.up, CameraPivotSpeed * Time.deltaTime);
+		}
+		if (Input.GetKey(KeyCode.D))
+		{
+			CameraPivot.transform.RotateAround(CameraPivot.transform.position, Vector3.up, -CameraPivotSpeed * Time.deltaTime);
+		}
+	}
+
+	public void ShakeCamera()
+	{
+		transform.localRotation = defaultRotation * Quaternion.Euler(Random.insideUnitCircle.normalized * 2);
 	}
 }

@@ -21,14 +21,14 @@ public class ShotController : MonoBehaviour
 	void ShootProjectile(RaycastHit userHit, List<Vector3> waypoints)
 	{
 		// Don't let player shoot if camera is currently following a bullet
-		if (GameManager.INSTANCE.ShootingRestricted || userHit.transform == null)
+		if (GameManager.INSTANCE.ShootingRestricted || GameManager.INSTANCE.IsPaused)
 			return;
 
 		// Calculate initial shooting direction based on first hit by "ProjectileVisualizer"
-		Vector3 RayDirection = (userHit.point - transform.position).normalized;
+		Vector3 RayDirection = userHit.transform != null ? (userHit.point - transform.position).normalized : Vector3.ProjectOnPlane((userHit.point - transform.position).normalized, Vector3.up);
 		// Project direction on the horizontal plane to flatten it and prevent unwanted shooting-deviation
 		RayDirection = Vector3.ProjectOnPlane(RayDirection, Vector3.up);
-		Ray Ray = new Ray(transform.position, RayDirection);
+		// Ray Ray = new Ray(transform.position, RayDirection);
 
 		// Make sure there's a bullet prefab available
 		if (BulletPrefab)

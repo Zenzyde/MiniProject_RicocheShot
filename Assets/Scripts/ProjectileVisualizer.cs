@@ -1,8 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
-using System;
 
 [RequireComponent(typeof(LineRenderer))]
 public class ProjectileVisualizer : MonoBehaviour
@@ -23,7 +23,7 @@ public class ProjectileVisualizer : MonoBehaviour
 	private MaterialPropertyBlock mpb;
 
 #if UNITY_EDITOR
-	async void OnDrawGizmos()
+	void OnDrawGizmos()
 	{
 		// Draw bullet-path for confirming bullet follows the path properly
 		Gizmos.color = Color.green;
@@ -67,8 +67,10 @@ public class ProjectileVisualizer : MonoBehaviour
 		VisualizeProjectileTrajectory(hit);
 
 		// If we click and have a hitresult confirmed, tell gamemanager to fire!
-		if (Input.GetMouseButtonDown(0) && hitPoint != Vector3.zero)
-			GameManager.INSTANCE.FireShotEvent(hit, hitPoints);
+		if (Input.GetMouseButtonDown(0))
+		{
+			GameManager.INSTANCE.FireShotEvent(hitPoint != Vector3.zero ? hit : new RaycastHit() { point = ray.GetPoint(RaycastMaxDistance) }, hitPoints);
+		}
 	}
 
 	Ray RaycastCameraToWorldPosition()
@@ -86,10 +88,15 @@ public class ProjectileVisualizer : MonoBehaviour
 	void VisualizeProjectileTrajectory(RaycastHit visualisation)
 	{
 		// If there's already an actively travelling bullet, don't visualize it's path
-		if (GameManager.INSTANCE.ShootingRestricted)
+		if (GameManager.INSTANCE.ShootingRestricted | GameManager.INSTANCE.IsPaused || visualisation.point == Vector3.zero)
 		{
 			line.positionCount = 1;
 			line.SetPosition(0, transform.position);
+			Ray idleRay = Camera.main.ScreenPointToRay(new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.transform.position.z));
+			Vector3 shotIdleHit = idleRay.origin + idleRay.direction * 1000;
+			Vector3 shotIdleDirection = (shotIdleHit - shotOrigin.position).normalized;
+			shotIdleDirection = Vector3.ProjectOnPlane(shotIdleDirection, Vector3.up);
+			shotOrigin.rotation = Quaternion.LookRotation(shotIdleDirection);
 			return;
 		}
 
@@ -100,9 +107,11 @@ public class ProjectileVisualizer : MonoBehaviour
 		Vector3 RayDirection = (visualisation.point - shotOrigin.position).normalized;
 		// Flatten raydirection along horizontal plane to circumvent possible travel-problems for bullet
 		RayDirection = Vector3.ProjectOnPlane(RayDirection, Vector3.up);
+		// Rotate "player" towards shot direction
+		shotOrigin.rotation = Quaternion.LookRotation(RayDirection);
 		Ray Ray = new Ray(shotOrigin.position, RayDirection);
 
-		// Loclal variables for calculating reflected vectors and continue bullet-bounce
+		// Local variables for calculating reflected vectors and continue bullet-bounce
 		Vector3 NextOrigin, NextDirection;
 
 		// Set first point of visualizing line renderer

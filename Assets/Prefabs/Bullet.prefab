@@ -72,7 +72,7 @@ TrailRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Time: 0.15
+  m_Time: 0.35
   m_Parameters:
     serializedVersion: 3
     widthMultiplier: 1
@@ -81,7 +81,7 @@ TrailRenderer:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0.025
+        value: 0.25
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -149,7 +149,6 @@ GameObject:
   - component: {fileID: 6608960224500677708}
   - component: {fileID: 6608960224500677709}
   - component: {fileID: 6608960224500677714}
-  - component: {fileID: 6608960224500677715}
   - component: {fileID: 4729016127855971569}
   - component: {fileID: 7420418873234691870}
   - component: {fileID: 5927764273261110955}
@@ -168,7 +167,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6608960224500677712}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 8.440201, y: 7.2722273, z: 14.466017}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.05, y: 0.05, z: 0.05}
   m_Children:
   - {fileID: 1151632302046040192}
@@ -224,20 +223,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!136 &6608960224500677715
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6608960224500677712}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 0
-  m_Radius: 0.5
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!54 &4729016127855971569
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -266,12 +251,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de410017952702c499c0815825c9cac6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MoveSpeed: 15
+  MoveSpeed: 65
   BulletTimeEnterDuration: 0.3
   BulletTimeTransitionDuration: 0.5
   BulletTimeExitDuration: 0.2
-  RaycastMaxDist: 4
+  RaycastMaxDist: 1.25
   SpherecastRadius: 0.025
+  WaypointReachedThreshold: 1
+  BulletTimeExitLength: 0.3
 --- !u!135 &5927764273261110955
 SphereCollider:
   m_ObjectHideFlags: 0

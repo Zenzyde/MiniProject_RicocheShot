@@ -111,3 +111,5 @@ MonoBehaviour:
   SinkDuration: 1
   SinkOffset: {x: 0, y: -50, z: 0}
   _PillarType: 1
+  LeanStrength: 5
+  LeanCenterOffset: {x: 0, y: -5, z: 0}

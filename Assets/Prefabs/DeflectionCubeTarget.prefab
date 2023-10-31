@@ -110,6 +110,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SinkDuration: 1
   SinkOffset: {x: 0, y: -50, z: 0}
-  PillarPointType:
-    PillarType: 0
-    PointWorth: 3
+  _PillarType: 0
+  LeanStrength: 5
+  LeanCenterOffset: {x: 0, y: -5, z: 0}
