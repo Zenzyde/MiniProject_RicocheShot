@@ -1,5 +1,5 @@
 # MiniProject_RicocheShot
-A projectile deflection, mini-project game made for the simple purpose of using the Poisson Disc Sampling algorithm and a bullet-bounce mechanic in a game. It's a fast-paced prototype with the goal of gathering as many points as possible within a given time frame by destroying as many pillars as possible with a single shot. Made with the Unity engine using C#. in a game.
+A projectile deflection, mini-project game made for the simple purpose of using the Poisson Disc Sampling algorithm and a bullet-bounce mechanic in a game. It's a pretty chill but quite strategic prototype with the goal of gathering as many points as possible with a limited amount of bullets per round by destroying as many pillars as possible with a single shot. Made with the Unity engine using C#.
 
 Visual example of the miniproject-game in action:
 ![Shooting-deflection game visual](/images/Ricoshet_shot_showcase.gif)
