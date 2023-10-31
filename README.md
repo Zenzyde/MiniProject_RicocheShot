@@ -2,11 +2,15 @@
 A projectile deflection, mini-project game made for the simple purpose of using the Poisson Disc Sampling algorithm and a bullet-bounce mechanic in a game. It's a fast-paced prototype with the goal of gathering as many points as possible within a given time frame by destroying as many pillars as possible with a single shot. Made with the Unity engine using C#. in a game.
 
 Visual example of the miniproject-game in action:
+![Shooting-deflection game visual](/images/Ricoshet_shot_showcase.gif)
 
-![Shooting-deflection game visual](/images/Ricoshet_Shot_early_alpha_new.gif)
-* Remaining time for a given round is displayed at the top
-* The total amount of points gathered is displayed below the time
-* The current amount of points gathered, based on the amount of pillars hit per shot, is displayed below the total point amount
-* A special point bonus is displayed at the bottom, increasing with the amount of pillars that were hit per shot
+The following shows how the game looks in editor:
+* The green rays and yellow balls that control the tilting and sinking of a pillar when it is hit.
+* The green balls that mark where a pillar has spawned, free-floating green balls mark locations where pillars were deleted to provide some variety in level layout.
+* The red line that visualizes the path the bullet will take when being shot.
+* The white square which visualizes the area where pillars are able to spawn.
 
-The shot is visualized with a red "lazer" which indicates the path the bullet will bounce
+![Game editor visual](/images/miniproject_ricochetshot_game_example_editor.png)
+
+Lastly, for your viewing pleasure, a still image of a bullet in mid-bounce!
+![Bullet mid-bounce](/images/miniproject_ricochetshot_game_example_visible_shot.png)
